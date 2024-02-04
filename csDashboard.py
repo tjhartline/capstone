@@ -5,7 +5,8 @@
 # October 2023
 # Updated Version - 02/2024 Interactive Dashboard coded with python and using SQLite for CS-499 
 
-# Setup the Jupyter version of Dash
+# Setup Dash
+from waitress import serve
 from dash import Dash
 
 # Configure the necessary Python module imports for dashboard components
@@ -25,7 +26,7 @@ import os
 # Configure the plotting routines
 import pandas as pd
 
-# Change 'animal_shelter' and 'AnimalShelter' to match your CRUD Python module file name and class name
+# Import CRUD file
 from module import AnimalShelter
 
 # Data Manipulation / Model
@@ -117,6 +118,11 @@ app.layout = html.Div([
 
     # Row 5: Breed Count
     html.Div(id='breed-count'),
+
+    # Row 6: Log
+    html.Div([
+        dcc.Markdown(id='log-output', style={'whiteSpace': 'pre-line'})
+    ], className='row'),
 
 ], style={'display': 'flex', 'flex-direction': 'column'})
 
@@ -249,4 +255,5 @@ def update_map(viewData, selected_rows):
     return []
 
 
-app.run_server(debug=True)
+if __name__ == '__main__':
+    serve(app.server, host='0.0.0.0', port=8050)
