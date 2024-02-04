@@ -2,27 +2,12 @@ from pymongo import MongoClient
 import os
 
 class AnimalShelter(object):
-    '''CRUD operations for animals collection in MongoDB'''
-
+    '''
+    Begin CRUD implementation
+    '''
     def __init__(self, username, pwd, host, port, db, col):
-        '''
-        Initialize Connection.
-        Parameters should be read from the environment or configuration, not hardcoded.
-        '''
-        # Use environment variables or fallback to default values
-        username = os.getenv('MONGO_USERNAME', username)
-        password = os.getenv('MONGO_PASSWORD', pwd)
-        host = os.getenv('MONGO_HOST', host)
-        port = int(os.getenv('MONGO_PORT', port))
-        db = os.getenv('MONGO_DB', db)
-
-        # Construct the connection string with authentication details
-        uri = f'mongodb://{username}:{password}@{host}:{port}/{db}'
-
-        # Create the MongoClient
+        uri = f'mongodb://{username}:{pwd}@{host}:{port}/{db}'
         self.client = MongoClient(uri)
-
-        # Access the specified database and collection
         self.database = self.client[db]
         self.collection = self.database[col]
 
