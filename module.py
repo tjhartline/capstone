@@ -33,27 +33,23 @@ class AnimalShelter(object):
         conn.commit()
         conn.close()
 
-    def createOne(self, data):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+   def createOne(self, data):
+    conn = sqlite3.connect(self.db_path)
+    cursor = conn.cursor()
+
+    try:
         cursor.execute('''
-            INSERT INTO animals (
-                age_upon_outcome, animal_id, animal_type, breed, color,
-                date_of_birth, datetime, monthyear, name, outcome_subtype,
-                outcome_type, sex_upon_outcome, location_lat, location_long,
-                age_upon_outcome_in_weeks
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            data['age_upon_outcome'], data['animal_id'], data['animal_type'],
-            data['breed'], data['color'], data['date_of_birth'],
-            data['datetime'], data['monthyear'], data['name'],
-            data['outcome_subtype'], data['outcome_type'],
-            data['sex_upon_outcome'], data['location_lat'],
-            data['location_long'], data['age_upon_outcome_in_weeks']
-        ))
+            INSERT INTO animals (animal_id, name, age_upon_outcome, breed, outcome_type)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (data['animal_id'], data['name'], data['age_upon_outcome'], data['breed'], data['outcome_type']))
         conn.commit()
-        conn.close()
         return True
+    except sqlite3.IntegrityError:
+        # Handle duplicate animal_id (maybe update the record)
+        print(f"Animal with ID {data['animal_id']} already exists.")
+        return False
+    finally:
+        conn.close()
 
     def read(self, query=None):
         conn = sqlite3.connect(self.db_path)
