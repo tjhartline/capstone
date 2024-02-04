@@ -1,5 +1,6 @@
 import sqlite3
-import os
+import csv
+from datetime import datetime
 
 class AnimalShelter(object):
     def __init__(self, db_path='animals.db'):
@@ -11,11 +12,22 @@ class AnimalShelter(object):
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS animals (
-                _id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                age INTEGER,
+                animal_id INTEGER PRIMARY KEY,
+                age_upon_outcome TEXT,
+                animal_type TEXT,
                 breed TEXT,
-                outcome_type TEXT
+                color TEXT,
+                date_of_birth TEXT,
+                datetime TEXT,
+                monthyear TEXT,
+                name TEXT,
+                outcome_subtype TEXT,
+                outcome_type TEXT,
+                record_num INTEGER,
+                sex_upon_outcome TEXT,
+                location_lat REAL,
+                location_long REAL,
+                age_upon_outcome_in_weeks REAL
             )
         ''')
         conn.commit()
@@ -25,8 +37,20 @@ class AnimalShelter(object):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO animals (name, age, breed, outcome_type) VALUES (?, ?, ?, ?)
-        ''', (data['name'], data['age'], data['breed'], data['outcome_type']))
+            INSERT INTO animals (
+                age_upon_outcome, animal_id, animal_type, breed, color,
+                date_of_birth, datetime, monthyear, name, outcome_subtype,
+                outcome_type, sex_upon_outcome, location_lat, location_long,
+                age_upon_outcome_in_weeks
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            data['age_upon_outcome'], data['animal_id'], data['animal_type'],
+            data['breed'], data['color'], data['date_of_birth'],
+            data['datetime'], data['monthyear'], data['name'],
+            data['outcome_subtype'], data['outcome_type'],
+            data['sex_upon_outcome'], data['location_lat'],
+            data['location_long'], data['age_upon_outcome_in_weeks']
+        ))
         conn.commit()
         conn.close()
         return True
@@ -36,24 +60,27 @@ class AnimalShelter(object):
         cursor = conn.cursor()
 
         if query is None:
-            # Read all records if no query is provided
             cursor.execute('SELECT * FROM animals')
         else:
-            # Apply the query
             cursor.execute('SELECT * FROM animals WHERE ' + query[0], query[1])
 
         result = cursor.fetchall()
         conn.close()
 
-        # Convert results to a list of dictionaries
-        columns = ['_id', 'name', 'age', 'breed', 'outcome_type']
+        columns = [
+            'animal_id', 'age_upon_outcome', 'animal_type', 'breed', 'color',
+            'date_of_birth', 'datetime', 'monthyear', 'name', 'outcome_subtype',
+            'outcome_type', 'sex_upon_outcome', 'location_lat', 'location_long',
+            'age_upon_outcome_in_weeks'
+        ]
         records = [dict(zip(columns, row)) for row in result]
         return records
 
     def update(self, query, update_data):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute('UPDATE animals SET name=?, age=?, breed=?, outcome_type=? WHERE ' + query[0], (*update_data.values(), query[1]))
+        cursor.execute('UPDATE animals SET ' + ', '.join([f"{key} = ?" for key in update_data.keys()]) +
+                       ' WHERE ' + query[0], [*update_data.values(), query[1]])
         conn.commit()
         conn.close()
         return True
@@ -65,3 +92,19 @@ class AnimalShelter(object):
         conn.commit()
         conn.close()
         return True
+
+
+# Create SQLite database and populate it with data from CSV
+shelter = AnimalShelter()
+shelter.create_table()
+
+csv_file = 'aac_shelter_outcomes.csv'
+with open(csv_file, 'r') as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        shelter.createOne(row)
+
+# Example usage of read method
+all_animals = shelter.read()
+for animal in all_animals[:5]:  # Displaying the first 5 records for example
+    print(animal)
