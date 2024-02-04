@@ -1,1 +1,1 @@
-web: python csDashboard.py
+web: gunicorn csDashboard:app
