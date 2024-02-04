@@ -12,7 +12,7 @@ class AnimalShelter(object):
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS animals (
-                animal_id INTEGER PRIMARY KEY,
+                animal_id TEXT PRIMARY KEY,
                 age_upon_outcome TEXT,
                 animal_type TEXT,
                 breed TEXT,
