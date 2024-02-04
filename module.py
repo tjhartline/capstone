@@ -39,7 +39,7 @@ class AnimalShelter(object):
 
         # Generate a valid ID based on animal_id
         animal_id = data['animal_id']
-        valid_id = ''.join(c if c.isalnum() else '' for c in animal_id)  # Keep only alphanumeric characters
+        valid_id = ''.join(c if c.isalnum() else '_' for c in animal_id)  # Replace invalid characters with underscores
 
         try:
             cursor.execute('''
@@ -54,6 +54,7 @@ class AnimalShelter(object):
             return False
         finally:
             conn.close()
+
 
     def read(self, query=None):
         conn = sqlite3.connect(self.db_path)
