@@ -55,7 +55,6 @@ class AnimalShelter(object):
         finally:
             conn.close()
 
-
     def read(self, query=None):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
