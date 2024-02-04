@@ -1,108 +1,67 @@
-from pymongo import MongoClient
+import sqlite3
 import os
 
 class AnimalShelter(object):
-    def __init__(self, username, pwd, host, port, db, col):
-        uri = f'mongodb+srv://{username}:{pwd}@{host}/{db}'
-        self.client = MongoClient(uri)
-        self.database = self.client[db]
-        self.collection = self.database[col]
+    def __init__(self, db_path='animals.db'):
+        self.db_path = db_path
+        self.create_table()
 
-    def create_from_csv(self, csv_path):
-        df = pd.read_csv(csv_path)
-        data_dict = df.to_dict(orient='records')
-        self.collection.insert_many(data_dict)
+    def create_table(self):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS animals (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                age INTEGER,
+                breed TEXT,
+                outcome_type TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
 
     def createOne(self, data):
-        '''
-        Implement the C in CRUD.
-        Insert document into the specified MongoDB collection.
-        '''
-        if data:
-            result = self.collection.insert_one(data)
-            return True if result.inserted_id else False
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO animals (name, age, breed, outcome_type) VALUES (?, ?, ?, ?)
+        ''', (data['name'], data['age'], data['breed'], data['outcome_type']))
+        conn.commit()
+        conn.close()
+        return True
+
+    def read(self, query=None):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        if query is None:
+            # Read all records if no query is provided
+            cursor.execute('SELECT * FROM animals')
         else:
-            print('\nNothing to save, data parameter is empty.')
-            return False
+            # Apply the query
+            cursor.execute('SELECT * FROM animals WHERE ' + query[0], query[1])
 
-    def createMany(self, datas):
-        '''
-        Implement C but for more than 1 insertion
-        '''
-        if datas:
-            result = self.collection.insert_many(datas)
-            return True if result.inserted_ids else False
-        else:
-            print('\nNothing to save, data parameter is empty.')
-            return False
+        result = cursor.fetchall()
+        conn.close()
 
-    def read(self, query):
-        print(f'\nQuery received: {query}, type: {type(query)}')  # Debugging line
-        '''
-        Implement the R in CRUD.
-        Query documents from the specified MongoDB collection.
-        '''
+        # Convert results to a list of dictionaries
+        columns = ['_id', 'name', 'age', 'breed', 'outcome_type']
+        records = [dict(zip(columns, row)) for row in result]
+        return records
 
-        if query is not None:  # This will be True for an empty dictionary
-            result = list(self.collection.find(query))
+    def update(self, query, update_data):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('UPDATE animals SET name=?, age=?, breed=?, outcome_type=? WHERE ' + query[0], (*update_data.values(), query[1]))
+        conn.commit()
+        conn.close()
+        return True
 
-            # Iterate through the results and categorize breeds
-            categorized_results = []
-            for doc in result:
-                # Add breed categorization logic here based on your criteria
-                breed = doc.get('breed', 'N/A')
-                if breed in ['Labrador Retriever Mix', 'Chesapeake Bay Retriever', 'Newfoundland']:
-                    doc['rescue_type'] = 'water'
-                elif breed in ['German Shepard', 'Alaskan Malamute', 'Old English Sheepdog', 'Siberian Husky', 'Rottweiler']:
-                    doc['rescue_type'] = 'mountain'
-                elif breed in ['Doberman Pinscher', 'German Shepard', 'Golden Retriever', 'Bloodhound', 'Rottweiler']:
-                    doc['rescue_type'] = 'disaster'
-                else:
-                    doc['rescue_type'] = 'unknown'  # Handle other breeds
-
-                categorized_results.append(doc)
-
-            print('\n')  # Add a newline before printing the results
-            for doc in categorized_results:
-                print(doc)
-            print('\n')  # Add a newline after printing the results
-
-            return categorized_results if categorized_results else []
-        else:
-            print('\nQuery parameter is empty. Nothing read. Test Failed.')
-            return []
-
-    def update(self, query, update_data, multi=False):
-        '''
-        Implement the U in CRUD
-        Update option
-        '''
-        if query:
-            if multi:
-                result = self.collection.update_many(query, {"$set": update_data})
-                print('\n\n')
-            else:
-                result = self.collection.update_one(query, {"$set": update_data})
-                print('\n\n')
-            return result.modified_count
-        else:
-            print('\nQuery parameter is empty')
-            return 0
-
-    def delete(self, query, multi=False):
-        '''
-        Implement the D in CRUD.
-        Options should be to delete one or delete many.
-        '''
-        if query:
-            if multi:
-                result = self.collection.delete_many(query)
-                print('\n\n')
-            else:
-                result = self.collection.delete_one(query)
-                print('\n\n')
-            return result.deleted_count
-        else:
-            print('\nQuery parameter is empty')
-            return 0
-
+    def delete(self, query):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM animals WHERE ' + query[0], query[1])
+        conn.commit()
+        conn.close()
+        return True
