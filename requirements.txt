@@ -1,7 +1,6 @@
 dash
 dash-leaflet
 pandas
-gunicorn
 dash_table
 plotly
-jupyter_dash
+waitress
