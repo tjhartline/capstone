@@ -36,7 +36,11 @@ shelter = AnimalShelter(db_path)
 
 # Class read method must support return of a list object and accept projection JSON input.
 # Sending the read method an empty document requests all documents be returned.
-df = pd.DataFrame.from_records(shelter.read())
+data = shelter.read()
+
+# Assuming the first row contains column names, set them explicitly
+df = pd.DataFrame(data[1:], columns=data[0])
+
 
 # Dashboard Layout / View
 app = Dash(__name__)
