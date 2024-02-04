@@ -2,14 +2,16 @@ from pymongo import MongoClient
 import os
 
 class AnimalShelter(object):
-    '''
-    Begin CRUD implementation
-    '''
     def __init__(self, username, pwd, host, port, db, col):
-        uri = f'mongodb://{username}:{pwd}@{host}:{port}/{db}'
+        uri = f'mongodb+srv://{username}:{pwd}@{host}/{db}'
         self.client = MongoClient(uri)
         self.database = self.client[db]
         self.collection = self.database[col]
+
+    def create_from_csv(self, csv_path):
+        df = pd.read_csv(csv_path)
+        data_dict = df.to_dict(orient='records')
+        self.collection.insert_many(data_dict)
 
     def createOne(self, data):
         '''
