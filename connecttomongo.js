@@ -1,9 +1,10 @@
-
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const fs = require('fs');
 
-const credentials = '<path_to_certificate>'
+// Read the content of the secret .pem file
+const credentials = fs.readFileSync('/etc/secrets/mongodb/X509capstone.pem', 'utf8');
 
-const client = new MongoClient('mongodb+srv://capstone.tursrrg.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority', {
+const client = new MongoClient(process.env.MONGO_CONNECTION_STRING, {
   tlsCertificateKeyFile: credentials,
   serverApi: ServerApiVersion.v1
 });
@@ -11,8 +12,8 @@ const client = new MongoClient('mongodb+srv://capstone.tursrrg.mongodb.net/?auth
 async function run() {
   try {
     await client.connect();
-    const database = client.db("AAC");
-    const collection = database.collection("animals");
+    const database = client.db(process.env.MONGO_DB); // Replace with your actual MongoDB database name
+    const collection = database.collection(process.env.MONGO_COLLECTION); // Replace with your actual MongoDB collection name
     const docCount = await collection.countDocuments({});
     console.log(docCount);
     // perform actions using client
@@ -21,4 +22,5 @@ async function run() {
     await client.close();
   }
 }
+
 run().catch(console.dir);
