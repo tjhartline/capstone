@@ -33,23 +33,23 @@ class AnimalShelter(object):
         conn.commit()
         conn.close()
 
-   def createOne(self, data):
-      conn = sqlite3.connect(self.db_path)
-      cursor = conn.cursor()
+    def createOne(self, data):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
 
-      try:
-          cursor.execute('''
-              INSERT INTO animals (animal_id, name, age_upon_outcome, breed, outcome_type)
-              VALUES (?, ?, ?, ?, ?)
-          ''', (data['animal_id'], data['name'], data['age_upon_outcome'], data['breed'], data['outcome_type']))
-          conn.commit()
-          return True
-      except sqlite3.IntegrityError:
-          # Handle duplicate animal_id (maybe update the record)
-          print(f"Animal with ID {data['animal_id']} already exists.")
-          return False
-      finally:
-          conn.close()
+        try:
+            cursor.execute('''
+                INSERT INTO animals (animal_id, name, age_upon_outcome, breed, outcome_type)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (data['animal_id'], data['name'], data['age_upon_outcome'], data['breed'], data['outcome_type']))
+            conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            # Handle duplicate animal_id (maybe update the record)
+            print(f"Animal with ID {data['animal_id']} already exists.")
+            return False
+        finally:
+            conn.close()
 
     def read(self, query=None):
         conn = sqlite3.connect(self.db_path)
@@ -87,8 +87,6 @@ class AnimalShelter(object):
         cursor.execute('DELETE FROM animals WHERE ' + query[0], query[1])
         conn.commit()
         conn.close()
-        return True
-
 
 # Create SQLite database and populate it with data from CSV
 shelter = AnimalShelter()
