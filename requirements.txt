@@ -4,3 +4,4 @@ pandas
 gunicorn
 dash_table
 plotly
+jupyter_dash

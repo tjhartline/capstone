@@ -6,7 +6,7 @@
 # Updated Version - 02/2024 Interactive Dashboard coded with python and using SQLite for CS-499 
 
 # Setup the Jupyter version of Dash
-from jupyter_dash import JupyterDash
+from dash import Dash
 
 # Configure the necessary Python module imports for dashboard components
 import dash
@@ -38,7 +38,7 @@ shelter = AnimalShelter(db_path)
 df = pd.DataFrame.from_records(shelter.read())
 
 # Dashboard Layout / View
-app = JupyterDash(__name__)
+app = Dash(__name__)
 
 # Add in Grazioso Salvare’s logo
 image_filename = 'Grazioso_Salvare_Logo.png'
