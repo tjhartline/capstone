@@ -34,23 +34,27 @@ class AnimalShelter(object):
         conn.close()
 
     def createOne(self, data):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+    conn = sqlite3.connect(self.db_path)
+    cursor = conn.cursor()
 
-        try:
-            cursor.execute('''
-                INSERT INTO animals (animal_id, name, age_upon_outcome, breed, outcome_type)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (data['animal_id'], data['name'], data['age_upon_outcome'], data['breed'], data['outcome_type']))
-            conn.commit()
-            return True
-        except sqlite3.IntegrityError:
-            # Handle duplicate animal_id (maybe update the record)
-            print(f"Animal with ID {data['animal_id']} already exists.")
-            return False
-        finally:
-            conn.close()
+    # Generate a valid ID based on animal_id
+    animal_id = data['animal_id']
+    valid_id = ''.join(c if c.isalnum() else '' for c in animal_id)  # Keep only alphanumeric characters
 
+    try:
+        cursor.execute('''
+            INSERT INTO animals (animal_id, name, age_upon_outcome, breed, outcome_type)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (valid_id, data['name'], data['age_upon_outcome'], data['breed'], data['outcome_type']))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        # Handle duplicate animal_id (maybe update the record)
+        print(f"Animal with ID {valid_id} already exists.")
+        return False
+    finally:
+        conn.close()
+        
     def read(self, query=None):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
