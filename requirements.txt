@@ -5,3 +5,4 @@ pymongo
 jupyter_dash
 dash_table
 plotly
+node
