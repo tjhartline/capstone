@@ -1,8 +1,6 @@
 dash
 dash-leaflet
 pandas
-pymongo
-jupyter_dash
+gunicorn
 dash_table
 plotly
-node
