@@ -1,1 +1,1 @@
-web: waitress-serve --call csDashboard:app.server
+web: gunicorn -b 0.0.0.0:$PORT csDashboard:app.server
