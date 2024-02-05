@@ -5,12 +5,9 @@ from datetime import datetime
 class AnimalShelter(object):
     def __init__(self, db_path='animals.db'):
         self.db_path = db_path
-        self.create_table()
 
     def create_table(self):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('''
+        query = '''
             CREATE TABLE IF NOT EXISTS animals (
                 animal_id TEXT PRIMARY KEY,
                 age_upon_outcome TEXT,
@@ -29,43 +26,42 @@ class AnimalShelter(object):
                 location_long REAL,
                 age_upon_outcome_in_weeks REAL
             )
-        ''')
-        conn.commit()
-        conn.close()
-
-    def createOne(self, data):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-
-        # Generate a valid ID based on animal_id
-        animal_id = data['animal_id']
-        valid_id = ''.join(c if c.isalnum() else '_' for c in animal_id)  # Replace invalid characters with underscores
-
-        try:
-            cursor.execute('''
-                INSERT INTO animals (animal_id, name, age_upon_outcome, breed, outcome_type)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (valid_id, data['name'], data['age_upon_outcome'], data['breed'], data['outcome_type']))
+        '''
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query)
             conn.commit()
-            return True
-        except sqlite3.IntegrityError:
-            # Handle duplicate animal_id (maybe update the record)
-            print(f"Animal with ID {valid_id} already exists.")
-            return False
-        finally:
-            conn.close()
+
+    def initialize_database(self):
+        self.create_table()
+
+    def create_one(self, data):
+        valid_id = ''.join(c if c.isalnum() else '_' for c in data['animal_id'])
+        query = '''
+            INSERT INTO animals (animal_id, name, age_upon_outcome, breed, outcome_type)
+            VALUES (?, ?, ?, ?, ?)
+        '''
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+
+            try:
+                cursor.execute(query, (valid_id, data['name'], data['age_upon_outcome'], data['breed'], data['outcome_type']))
+                conn.commit()
+                return True
+            except sqlite3.IntegrityError:
+                print(f"Animal with ID {valid_id} already exists.")
+                return False
 
     def read(self, query=None):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+        query_str = 'SELECT * FROM animals'
+        if query is not None:
+            query_str += f" WHERE {query[0]}"
 
-        if query is None:
-            cursor.execute('SELECT * FROM animals')
-        else:
-            cursor.execute('SELECT * FROM animals WHERE ' + query[0], query[1])
-
-        result = cursor.fetchall()
-        conn.close()
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query_str, query[1] if query is not None else None)
+            result = cursor.fetchall()
 
         columns = [
             'animal_id', 'age_upon_outcome', 'animal_type', 'breed', 'color',
@@ -77,30 +73,35 @@ class AnimalShelter(object):
         return records
 
     def update(self, query, update_data):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('UPDATE animals SET ' + ', '.join([f"{key} = ?" for key in update_data.keys()]) +
-                       ' WHERE ' + query[0], [*update_data.values(), query[1]])
-        conn.commit()
-        conn.close()
+        update_str = ', '.join([f"{key} = ?" for key in update_data.keys()])
+        query_str = f'UPDATE animals SET {update_str} WHERE {query[0]}'
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query_str, [*update_data.values(), query[1]])
+            conn.commit()
         return True
 
     def delete(self, query):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('DELETE FROM animals WHERE ' + query[0], query[1])
-        conn.commit()
-        conn.close()
+        query_str = f'DELETE FROM animals WHERE {query[0]}'
 
-# Create SQLite database and populate it with data from CSV
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query_str, query[1])
+            conn.commit()
+
+# Example usage
 shelter = AnimalShelter()
-shelter.create_table()
+shelter.initialize_database()
 
 csv_file = 'aac_shelter_outcomes.csv'
-with open(csv_file, 'r') as file:
-    reader = csv.DictReader(file)
-    for row in reader:
-        shelter.createOne(row)
+try:
+    with open(csv_file, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            shelter.create_one(row)
+except FileNotFoundError:
+    print(f"Error: CSV file '{csv_file}' not found.")
 
 # Example usage of read method
 all_animals = shelter.read()
