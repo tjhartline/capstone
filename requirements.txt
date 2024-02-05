@@ -3,4 +3,4 @@ dash-leaflet
 pandas
 dash_table
 plotly
-waitress
+gunicorn
