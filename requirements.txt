@@ -6,4 +6,3 @@ dash-table
 pandas
 plotly
 gunicorn
-sqlite3
