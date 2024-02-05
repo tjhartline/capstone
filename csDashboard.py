@@ -36,9 +36,11 @@ shelter = AnimalShelter(db_path)
 # Class read method must support return of a list object and accept projection JSON input.
 # Sending the read method an empty document requests all documents be returned.
 data = shelter.read()
-
-# Assuming the first row contains column names, set them explicitly
-df = pd.DataFrame(data[1:], columns=data[0])
+# Handle and set up dataframe
+if data:
+    df = pd.DataFrame(data[1:], columns=data[0])
+else:
+    df = pd.DataFrame()  # or handle it according to your use case
 
 
 # Dashboard Layout / View
@@ -259,4 +261,5 @@ def update_map(viewData, selected_rows):
 
 
 if __name__ == '__main__':
-    serve(app.server, host='0.0.0.0', port=8050)
+    app.run_server(host='0.0.0.0', port=8050)
+
