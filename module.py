@@ -29,22 +29,6 @@ class AnimalShelter(object):
             cursor = conn.cursor()
             cursor.execute(query_str)
 
-    def create(self, data):
-        query_str = '''
-            INSERT INTO animals (
-                age_upon_outcome, animal_type, breed, color, date_of_birth,
-                datetime, monthyear, name, outcome_subtype, outcome_type,
-                sex_upon_outcome, location_lat, location_long,
-                age_upon_outcome_in_weeks
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        '''
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(query_str, tuple(data.values()))
-            animal_id = cursor.lastrowid
-            conn.commit()
-        return animal_id
-
     def read(self, query=None):
         query_str = 'SELECT * FROM animals'
         params = None
@@ -55,9 +39,11 @@ class AnimalShelter(object):
 
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            
-            # Use placeholders for parameters
-            cursor.execute(query_str, params)
+    
+            if params is not None:
+                cursor.execute(query_str, params)
+            else:
+                cursor.execute(query_str)
 
             result = cursor.fetchall()
 
