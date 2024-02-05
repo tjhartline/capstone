@@ -6,7 +6,6 @@
 # Updated Version - 02/2024 Interactive Dashboard coded with python and using SQLite for CS-499 
 
 # Setup Dash
-from waitress import serve
 from dash import Dash
 
 # Configure the necessary Python module imports for dashboard components
