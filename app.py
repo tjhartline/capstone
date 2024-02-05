@@ -5,30 +5,11 @@ import plotly.express as px
 import dash_leaflet as dl
 import base64
 import pandas as pd
-from module import AnimalShelter
+from animal_shelter import AnimalShelter
+import os
 
 # Setup Dash
 app = Dash(__name__)
-
-# Configure the necessary Python module imports for dashboard components
-import dash
-import dash_leaflet as dl
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output, State
-import plotly.express as px
-from dash import dash_table
-import base64
-from module import AnimalShelter
-
-# Configure OS routines
-import os
-
-# Configure the plotting routines
-import pandas as pd
-
-# Import CRUD file
-from module import AnimalShelter
 
 # Data Manipulation / Model
 # Update with your username and password and CRUD Python module name
