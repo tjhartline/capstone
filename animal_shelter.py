@@ -64,7 +64,7 @@ class AnimalShelter(object):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(query_str)
-
+    '''
     def unq_animal_types(self):
         query_str = 'SELECT DISTINCT animal_type FROM animals'
 
@@ -74,7 +74,7 @@ class AnimalShelter(object):
             result = cursor.fetchall()
 
         return [row[0] for row in result]
-
+    '''
     def createOne(self, data):
         '''
         Implement the C in CRUD.
