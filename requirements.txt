@@ -1,9 +1,1 @@
-dash
-dash-core-components
-dash-html-components
-dash-leaflet
-dash-table
-pandas
-plotly
-gunicorn
-sqlite3
+
