@@ -127,7 +127,7 @@ app.layout = html.Div([
 
 @app.callback(
     [Output('bubble-plot', 'figure'), Output('datatable-id', 'data'), Output('datatable-id', 'columns')],
-    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types],
+    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in df['animal_type'].unique()],
     prevent_initial_call=True
 )
 def update_dashboard(*args):
