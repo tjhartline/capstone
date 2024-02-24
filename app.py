@@ -65,8 +65,6 @@ shelter = AnimalShelter(db_path)  # Creating an instance of AnimalShelter to int
 data = shelter.read()  # Reading data from the database
 df = pd.DataFrame(data)  # Creating a Pandas DataFrame from the retrieved data
 
-# Get each animal type in the collection (distinct, no duplicates)
-unq_animal_types = df['animal_type'].unique()  # Extracting unique animal types from the DataFrame
 data = df.to_dict('records')  # Converting DataFrame to a list of dictionaries for Dash data components
 
 # Add in Grazioso Salvare’s logo
@@ -92,7 +90,7 @@ app.layout = html.Div([
     html.Div([
         html.Div([
             html.Button('All', id='btn-all', n_clicks=0),
-            *[html.Button(animal_type, id=f'btn-{animal_type}', n_clicks=0) for animal_type in unq_animal_types]
+            *[html.Button(animal_type, id=f'btn-{animal_type}', n_clicks=0) for animal_type in df['animal_type'].unique()]
             # Creating buttons for each unique animal type
         ], className='col-6'),
     ], className='row'),
