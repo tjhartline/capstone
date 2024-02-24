@@ -64,7 +64,10 @@ class AnimalShelter(object):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(query_str)
-    '''
+
+    def authenticate(self, username, password):    # Implement authentication
+        return username == self.username and password == self.password
+        
     def unq_animal_types(self):
         query_str = 'SELECT DISTINCT animal_type FROM animals'
 
@@ -74,7 +77,7 @@ class AnimalShelter(object):
             result = cursor.fetchall()
 
         return [row[0] for row in result]
-    '''
+
     def createOne(self, data):
         '''
         Implement the C in CRUD.
@@ -109,7 +112,11 @@ class AnimalShelter(object):
             print('\nNothing to save, data parameter is empty.')
             return False
 
-    def read(self, query=None):
+    def read(self, query=None, username=None, password=None):
+        if not self.authenticate(username, password):
+            print('Authentication failed. Invalid username or password.')
+            return []
+
         query_str = 'SELECT * FROM animals'
         params = None
 
