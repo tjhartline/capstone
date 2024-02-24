@@ -1,30 +1,53 @@
 '''
-
-Tammy Hartline
-Feb 2024
-Capstone Course Week 4
-#app.py - Main application file
-Description: This file is meant to initialize the database functionality for the web application.
-To execute, open terminal and type: python app.py once in the directory where the file is located.
-
-
---------------------------------------------------------------------------------------------
-02/05/2024
-Notes for next assignments and TODOS: Figure out why the code is not launching the web application.
-Current Issues: The code is not launching the web application at all. Either it returns
-Not found, or it returns a 504 error page. Cannot continue to test until I can get it to deploy.
-
-02/07/2024
-Update: After several alterations, and updating the final call to the app.run_server method, the application is now launching.
----------------------------------------------------------------------------------------------
-02/11/2024
-Notes for next assignments and TODOS: Debugging and testing the application
-Current Issues: Filters are not functioning properly. The data is not being filtered as expected.
-When clicking on any filter, or using the text filter, the data is not changed, or sorted.
-It also does not populate the graph with the correct data.
-Continue altering the code and testing to find the issue and continue adding enhancements.
-----------------------------------------------------------------------------------------------
+# app.py
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|  ** Author:          Tammy Hartline                                                                       |
+|  ** Version:         2.0.9                                                                                |
+|  ** Description:     This file is meant to initialize the database functionality for the web application. |
+|  ** Instructions:    Open CMD line -> navigate to app location (cd \path\to\repo\) -> run [python app.py] |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|                                            Changelog:                                                     |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|  ###  Start -- 01/2024 - TH                                                                               |
+|  [Converted jupyter notebook file into a Python application file to more easily integrate as web          |
+|  application instead of hosting locally.]                                                                 |
+|  ### - End                                                                                                |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|  ###  Start -- 02/2024 - TH                                                                               |
+|  [Updated language to call the new animal_shelter.py import, versus previous module.py.]                  |
+|  ### - End                                                                                                |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|  ###  Start -- 02/2024 - TH                                                                               |
+|  [Corrected filters and continuously debugging to determine what is causing them to not function          |
+|  properly if they function at all.]                                                                       |
+|  ### - End                                                                                                |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|  ###  Start --02/2024 - TH                                                                                |
+|  [Added enhancements as planned, but still running into buggy application issues.]                        |
+|  ### - End                                                                                                |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|                                            Notes:                                                         |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|   02/05/2024                                                                                              |
+|   Notes for next assignments and TODOS: Figure out why the code is not launching the web application.     |
+|   Current Issues: The code is not launching the web application at all. Either it returns                 |
+|   Not found, or it returns a 504 error page. Cannot continue to test until I can get it to deploy.        |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|   02/07/2024                                                                                              |
+|   Update: After several alterations, and updating the final call to the app.run_server method,            |
+|   the application is now launching.                                                                       |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
+|   02/11/2024                                                                                              |
+|   Notes for next assignments and TODOS: Debugging and testing the application                             |
+|   Current Issues: Filters are not functioning properly. The data is not being filtered as expected.       |
+|   When clicking on any filter, or using the text filter, the data is not changed, or sorted.              |
+|   It also does not populate the graph with the correct data.                                              |
+|   Continue altering the code and testing to find the issue and continue adding enhancements.              |
+|*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
 '''
+
 from dash import Dash, html, dcc, dash_table  # Importing necessary Dash components
 import dash  # Importing Dash
 from dash.dependencies import Input, Output  # Importing Dash callback functions
