@@ -43,9 +43,9 @@ class AnimalShelter(object):
     def _create_table(self):
         query_str = '''
             CREATE TABLE IF NOT EXISTS animals (
-                animal_id INTEGER PRIMARY KEY,
-                animal_type TEXT,
                 age_upon_outcome TEXT,
+                animal_id PRIMARY KEY,
+                animal_type TEXT,
                 breed TEXT,
                 color TEXT,
                 date_of_birth TEXT,
