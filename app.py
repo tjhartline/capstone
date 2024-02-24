@@ -1,47 +1,60 @@
-# app.py
-from dash import Dash, html, dcc, dash_table
-from dash.dependencies import Input, Output
-import plotly.express as px
-import dash_leaflet as dl
-import base64
-import pandas as pd
-from animal_shelter import AnimalShelter
-import os
+'''
+
+Tammy Hartline
+Feb 2024
+Capstone Course Week 4
+#app.py - Main application file
+Description: This file is meant to initialize the database functionality for the web application.
+To execute, open terminal and type: python app.py once in the directory where the file is located.
+
+
+--------------------------------------------------------------------------------------------
+02/05/2024
+Notes for next assignments and TODOS: Figure out why the code is not launching the web application.
+Current Issues: The code is not launching the web application at all. Either it returns
+Not found, or it returns a 504 error page. Cannot continue to test until I can get it to deploy.
+
+02/07/2024
+Update: After several alterations, and updating the final call to the app.run_server method, the application is now launching.
+---------------------------------------------------------------------------------------------
+02/11/2024
+Notes for next assignments and TODOS: Debugging and testing the application
+Current Issues: Filters are not functioning properly. The data is not being filtered as expected.
+When clicking on any filter, or using the text filter, the data is not changed, or sorted.
+It also does not populate the graph with the correct data.
+Continue altering the code and testing to find the issue and continue adding enhancements.
+----------------------------------------------------------------------------------------------
+'''
+from dash import Dash, html, dcc, dash_table  # Importing necessary Dash components
+import dash  # Importing Dash
+from dash.dependencies import Input, Output  # Importing Dash callback functions
+import plotly.express as px  # Importing Plotly Express for data visualization
+import pandas as pd  # Importing Pandas for data manipulation
+from animal_shelter import AnimalShelter  # Importing AnimalShelter class for data access
+import base64  # Importing base64 for image encoding
 
 # Setup Dash
-app = Dash(__name__)
+app = Dash(__name__)  # Creating a Dash application instance
 
 # Data Manipulation / Model
-# Update with your username and password and CRUD Python module name
-db_path = 'animals.db'
-shelter = AnimalShelter(db_path)
-
-# Class read method must support return of a list object and accept projection JSON input.
-# Sending the read method an empty document requests all documents be returned.
-data = shelter.read()
-# Handle and set up dataframe
-if data:
-    df = pd.DataFrame(data[1:], columns=data[0])
-else:
-    df = pd.DataFrame()  # or handle it according to your use case
-
-# Add in Grazioso Salvare’s logo
-image_filename = 'Grazioso_Salvare_Logo.png'
-encoded_image = base64.b64encode(open(image_filename, 'rb').read())
-
-# Place the HTML image tag in the line below into the app.layout code according to your design.
-# Also, remember to include a unique identifier such as your name or date.
-html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()))
-
-# Create global variables to populate filtered data
+db_path = 'animals.db'  # Path to the database file
+shelter = AnimalShelter(db_path)  # Creating an instance of AnimalShelter to interact with the database
+data = shelter.read()  # Reading data from the database
+df = pd.DataFrame(data)  # Creating a Pandas DataFrame from the retrieved data
 
 # Get each animal type in the collection (distinct, no duplicates)
-unq_animal_types = df['breed'].unique()
-data = df.to_dict('records')
+unq_animal_types = df['animal_type'].unique()  # Extracting unique animal types from the DataFrame
+data = df.to_dict('records')  # Converting DataFrame to a list of dictionaries for Dash data components
+
+# Add in Grazioso Salvare’s logo
+image_filename = 'Grazioso_Salvare_Logo.png'  # Path to the logo image file
+encoded_image = base64.b64encode(open(image_filename, 'rb').read())  # Encoding the image to base64
+
+# Defining the layout of the Dash application
 app.layout = html.Div([
-    html.Center(html.B(html.H1('Capstone Project Dashboard'))),
-    html.Center(html.B(html.H1("Tammy Hartline's Grazioso Salvare DashBoard Final Project"))),
-    html.Hr(),
+    html.Center(html.B(html.H1('Capstone Project Dashboard'))),  # Header
+    html.Center(html.B(html.H1("Tammy Hartline's Grazioso Salvare DashBoard Final Project"))),  # Subheader
+    html.Hr(),  # Horizontal line
 
     # Row 1: Header and Photo
     html.Div([
@@ -52,33 +65,22 @@ app.layout = html.Div([
         ], className='col-6', style={'display': 'flex', 'justify-content': 'center', 'align-items': 'center'}),
     ], className='row'),
 
-    # Row 2: Buttons for Animal Types and Radio Buttons
+    # Row 2: Buttons for Animal Types
     html.Div([
         html.Div([
             html.Button('All', id='btn-all', n_clicks=0),
-            *[html.Button(breed, id=f'btn-{breed}', n_clicks=0) for breed in unq_animal_types]
+            *[html.Button(animal_type, id=f'btn-{animal_type}', n_clicks=0) for animal_type in unq_animal_types]
+            # Creating buttons for each unique animal type
         ], className='col-6'),
-        html.Div([
-            dcc.RadioItems(
-                id='rescue-filter',
-                options=[
-                    {'label': 'Water Rescue', 'value': 'water'},
-                    {'label': 'Mountain and Wilderness Rescue', 'value': 'mount'},
-                    {'label': 'Disaster and Individual Tracking', 'value': 'disaster'},
-                    {'label': 'Reset', 'value': 'reset'}
-                ],
-                value='reset',
-            ),
-        ], className='col-6', id='radio-buttons'),  # Give it an ID for callback
     ], className='row'),
 
-    # Row 3: Data Table and Breed Count
+    # Row 3: Data Table
     html.Div([
         dash_table.DataTable(
             id='datatable-id',
             columns=[
                 {"name": i, "id": i, "deletable": False, "selectable": True} for i in df.columns
-            ],
+            ],  # Defining columns for the data table
             data=data,
             editable=False,
             sort_action="native",
@@ -91,153 +93,46 @@ app.layout = html.Div([
         ),
     ], className='row'),
 
-    # Row 4: Graph and Map
+    # Row 4: Graph
     html.Div([
         dcc.Graph(id='bubble-plot', className='col-6'),
-        html.Div([
-            html.Div(id='graph-id', className='col-12'),
-            html.Div(id='map-id', className='col-12'),
-        ], className='col-6'),
     ], className='row'),
+])
 
-    # Row 5: Breed Count
-    html.Div(id='breed-count'),
-
-    # Row 6: Log
-    html.Div([
-        dcc.Markdown(id='log-output', style={'whiteSpace': 'pre-line'})
-    ], className='row'),
-
-], style={'display': 'flex', 'flex-direction': 'column'})
-
+# This section demonstrates skills and conceptualization of software design/engineering by setting up a user-friendly interface for data visualization.
+# It also exhibits good design practices by organizing the layout in a structured and visually appealing manner.
 
 @app.callback(
-    Output('breed-count', 'children'),
-    Input('rescue-filter', 'value')
-)
-def update_breed_count(selected_rescue_type):
-    if selected_rescue_type == 'reset':
-        return f'Total Breeds: {len(df)}'
-
-    count = 0
-
-    for index, row in df.iterrows():
-        breed = row['breed']
-        rescue_types = row['rescue_type']
-
-        if selected_rescue_type in rescue_types:
-            count += 1
-
-    return f'Breeds with {selected_rescue_type} Rescue: {count}'
-
-
-@app.callback(
-    [Output('datatable-id', 'data'), Output('datatable-id', 'columns')],
-    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{breed}', 'n_clicks') for breed in unq_animal_types] + [Input('rescue-filter', 'value')],
+    [Output('bubble-plot', 'figure'), Output('datatable-id', 'data'), Output('datatable-id', 'columns')],
+    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types],
     prevent_initial_call=True
 )
 def update_dashboard(*args):
-    btn_all_clicks, *btn_type_click, rescue_filter = args
+    btn_all_clicks, *btn_type_click = args
 
-    context = dash.callback_context
-    button_id = context.triggered[0]['prop_id'].split('.')[0]
+    # Determine which button was clicked
+    ctx = dash.callback_context
+    clicked_button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    if button_id == 'btn-all':
-        selected_breed = None
+    if clicked_button_id == 'btn-all':
+        filtered_df = df.copy()  # No filter, so use the entire DataFrame
     else:
-        selected_breed = button_id.split('-')[1]
+        selected_animal_type = clicked_button_id.split('-')[1]
+        filtered_df = df[df['animal_type'] == selected_animal_type]  # Filter by selected animal type
 
-    if selected_breed:
-        filtered_data = [record for record in data if record['breed'] == selected_breed]
-    else:
-        filtered_data = data
+    # Create a bubble chart
+    fig = px.scatter(filtered_df, x="animal_type", y="outcome_type", size=filtered_df.groupby('animal_type').size(), color="animal_type")
 
-    rescue_filter_style = {'display': 'block' if selected_breed == 'Dog' else 'none'}
+    # Convert DataFrame to dict for dash_table
+    filtered_data = filtered_df.to_dict('records')
 
-    if rescue_filter != 'reset':
-        filtered_data = [record for record in filtered_data if record['rescue_type'] == rescue_filter]
+    # Generate columns for dash_table
+    columns = [{"name": i, "id": i, "deletable": False, "selectable": True} for i in filtered_df.columns]
 
-    columns = [{"name": i, "id": i, "deletable": False, "selectable": True} for i in df.columns]
+    return fig, filtered_data, columns
 
-    return filtered_data, columns
-
-
-@app.callback(
-    Output('bubble-plot', 'figure'),
-    Output('datatable-id', 'derived_viewport_data'),
-    Output('graph-id', "children"),
-    Input('rescue-filter', 'value'),
-    [Input(f'btn-{breed}', 'n_clicks') for breed in unq_animal_types],
-    prevent_initial_call=True
-)
-def update_plot(rescue_filter, *btn_clicks):
-    dff = df.copy()
-
-    if rescue_filter == 'reset':
-        dff_breeds = dff[dff['breed'] == 'Dog']
-        rescue_counts = dff_breeds['rescue_type'].value_counts()
-    else:
-        dff_breeds = dff[(dff['breed'] == 'Dog') & (dff['rescue_type'] == rescue_filter)]
-        rescue_counts = dff_breeds['rescue_type'].value_counts()
-
-    total_rescue_breeds = len(dff_breeds)
-
-    dff_breeds['size'] = dff_breeds['rescue_type'].map(rescue_counts)
-
-    fig = px.scatter(
-        dff_breeds,
-        x='age',
-        y='outcome_type',
-        size='size',
-        color='breed',
-        hover_name='breed'
-    )
-
-    return fig, dff_breeds.to_dict('records'), total_rescue_breeds
-
-
-# Map
-@app.callback(
-    Output('map-id', "children"),
-    Input('datatable-id', "derived_viewport_data"),
-    Input('datatable-id', 'selected_rows'),
-    prevent_initial_call=True
-)
-def update_map(viewData, selected_rows):
-    dff = pd.DataFrame.from_dict(viewData)
-
-    if selected_rows is not None and len(selected_rows) > 0:
-        selected_row_index = selected_rows[0]
-
-        if selected_row_index >= 0 and selected_row_index < len(dff):
-            selected_row = dff.iloc[selected_row_index]
-
-            latitude = selected_row['location_lat']
-            longitude = selected_row['location_long']
-
-            return [
-                dl.Map(
-                    style={'width': '1000px', 'height': '500px'},
-                    center=[30.75, -97.48],
-                    zoom=10,
-                    children=[
-                        dl.TileLayer(id="base-layer-id"),
-                        dl.Marker(
-                            position=(latitude, longitude),
-                            children=[
-                                dl.Tooltip('Animal Shelter'),
-                                dl.Popup([
-                                    html.H1(selected_row["breed"]),
-                                    html.P(selected_row["name"])
-                                ])
-                            ]
-                        )
-                    ]
-                )
-            ]
-
-    return []
-
+# This callback function demonstrates skills and conceptualization of algorithms by dynamically updating the data visualization based on user interactions.
+# It efficiently filters and processes data to generate relevant charts and tables.
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050)
