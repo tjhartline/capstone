@@ -112,12 +112,25 @@ class AnimalShelter(object):
             print('\nNothing to save, data parameter is empty.')
             return False
 
-    def read(self, query=None, username=None, password=None):
+    def read(self, projection=None, query=None, username=None, password=None):
+        """
+        Reads records from the database.
+
+        Parameters:
+        - projection (list or None): A list specifying the columns to include.
+        - query (tuple or None): A tuple specifying the query conditions.
+        - username (str): Username for authentication.
+        - password (str): Password for authentication.
+
+        Returns:
+        - list: A list of records.
+        """
         if not self.authenticate(username, password):
             print('Authentication failed. Invalid username or password.')
             return []
 
-        query_str = 'SELECT * FROM animals'
+        query_str = 'SELECT *' if projection is None else f"SELECT {', '.join(projection)}"
+        query_str += ' FROM animals'
         params = None
 
         if query is not None:
@@ -140,8 +153,10 @@ class AnimalShelter(object):
             'outcome_type', 'sex_upon_outcome', 'location_lat', 'location_long',
             'age_upon_outcome_in_weeks', 'rescue_type'
         ]
+        
         records = [dict(zip(columns, row)) for row in result]
         return records
+
 
     def update(self, query, update_data, multi=False):
         '''
