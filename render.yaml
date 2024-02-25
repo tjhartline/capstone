@@ -13,8 +13,8 @@ services:
     -source: 35.160.120.126
     -source: 44.233.151.27
     -source: 34.211.200.85
-     # Allow external
-     source: 0.0.0.0/0
+    # Allow external
+    source: 0.0.0.0/0
 databases:
 - name: SQLite
   databaseName: animals
