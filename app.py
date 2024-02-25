@@ -48,25 +48,34 @@
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
 '''
 
+from sre_parse import State
 from dash import Dash, html, dcc, dash_table  # Importing necessary Dash components
 import dash  # Importing Dash
-from dash.dependencies import Input, Output  # Importing Dash callback functions
+import dash_leaflet as dl
+from dash.dependencies import Input, Output, State  # Importing Dash callback functions
 import plotly.express as px  # Importing Plotly Express for data visualization
-import pandas as pd  # Importing Pandas for data manipulation
+import pandas as pd
+from traitlets import dlink  # Importing Pandas for data manipulation
 from animal_shelter import AnimalShelter  # Importing AnimalShelter class for data access
-import os
 import base64  # Importing base64 for image encoding
 
 # Data Manipulation / Model
 db_path = 'animals.db'
+username = 'aacuser'
+password = 'securepassword'
 
-shelter = AnimalShelter(db_path)
+shelter = AnimalShelter(db_path=db_path, username=username, password=password)
 
 # Class read method must support return of a list object and accept projection JSON input.
 # Using an empty projection and query to retrieve all records
 df = pd.DataFrame.from_records(shelter.read(projection=None, query=None))
-df.drop(columns=['animal_id'], inplace=True)
 
+# Check if animal id exists before dropping
+if 'animal_id' in df.columns:
+    df.drop(columns=['animal_id'], inplace=True)
+
+# Get distinct animal types for filter
+unq_animal_types = df['animal_type'].copy() if 'animal_type' in df.columns else None
 
 # Setup Dash
 app = Dash(__name__)
@@ -75,17 +84,16 @@ app = Dash(__name__)
 def authenticate(username, password):
     valid_users = {'admin': 'adminPassword', 'aacuser': 'securepassword'}
 
-if username in valid_users and valid_users[username] == password:
-    return True
-else:
-    return False
+    if username in valid_users and valid_users[username] == password:
+        username = username
+        password = password
+        return True
+    else:
+        return False
 
 # Add in Grazioso Salvare’s logo
 image_filename = 'Grazioso_Salvare_Logo.png'
 encoded_image = base64.b64encode(open(image_filename, 'rb').read())
-
-# Create the global variables to populate the filtered data
-unq_animal_types = df['animal_type'].unique()
 data = df.to_dict('records')
 
 # Define layout
@@ -106,8 +114,8 @@ app.layout = html.Div([
     # Row 2: Buttons for Animal Types and Radio Buttons
     html.Div([
         html.Div([
-            html.Button('All', id='btn-all', n_clicks=0),
-            *[html.Button(animal_type, id=f'btn-{animal_type}', n_clicks=0) for animal_type in unq_animal_types]
+            html.Button('All', id='btn-all', n_clicks=0)
+            *[html.Button(animal_type, id=f'btn-{animal_type}', n_clicks=0) for animal_type in unq_animal_types] if unq_animal_types else [],
         ], className='col-6'),
         html.Div([
             dcc.RadioItems(
@@ -202,9 +210,10 @@ def update_breed_count(selected_rescue_type):
 # Datatable callback
 @app.callback(
     [Output('datatable-id', 'data'), Output('datatable-id', 'columns')],
-    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types] + [Input('rescue-filter', 'value')],
+    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in (unq_animal_types or [])] + [Input('rescue-filter', 'value')],
     prevent_initial_call=True
 )
+
 def update_dashboard(*args):
     # Extract the values from the *args list
     btn_all_clicks, *btn_type_click, rescue_filter = args
@@ -242,7 +251,7 @@ def update_dashboard(*args):
     Output('datatable-id', 'derived_viewport_data'),
     Output('graph-id', "children"),
     Input('rescue-filter', 'value'),
-    [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types],
+    [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in (unq_animal_types or [])],
     prevent_initial_call=True
 )
 def update_plot(rescue_filter, *btn_clicks):

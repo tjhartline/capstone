@@ -36,8 +36,10 @@
 import sqlite3
 
 class AnimalShelter(object):
-    def __init__(self, db_path=':memory:'):
+    def __init__(self, db_path=':memory:', username=None, password=None):
         self.db_path = db_path
+        self.username = username
+        self.password = password
         self._create_table()
 
     def _create_table(self):
@@ -45,7 +47,7 @@ class AnimalShelter(object):
             CREATE TABLE IF NOT EXISTS animals (
                 age_upon_outcome TEXT,
                 animal_id PRIMARY KEY,
-                animal_type TEXT,
+                animal_type,
                 breed TEXT,
                 color TEXT,
                 date_of_birth TEXT,
@@ -65,8 +67,6 @@ class AnimalShelter(object):
             cursor = conn.cursor()
             cursor.execute(query_str)
 
-    def authenticate(self, username, password):    # Implement authentication
-        return username == self.username and password == self.password
         
     def unq_animal_types(self):
         query_str = 'SELECT DISTINCT animal_type FROM animals'
@@ -119,16 +119,10 @@ class AnimalShelter(object):
         Parameters:
         - projection (list or None): A list specifying the columns to include.
         - query (tuple or None): A tuple specifying the query conditions.
-        - username (str): Username for authentication.
-        - password (str): Password for authentication.
-
+    
         Returns:
         - list: A list of records.
         """
-        if not self.authenticate(username, password):
-            print('Authentication failed. Invalid username or password.')
-            return []
-
         query_str = 'SELECT *' if projection is None else f"SELECT {', '.join(projection)}"
         query_str += ' FROM animals'
         params = None
@@ -148,12 +142,12 @@ class AnimalShelter(object):
             result = cursor.fetchall()
 
         columns = [
-            'animal_id', 'age_upon_outcome', 'animal_type', 'breed', 'color',
+            'age_upon_outcome', 'animal_id', 'animal_type', 'breed', 'color',
             'date_of_birth', 'datetime', 'monthyear', 'name', 'outcome_subtype',
             'outcome_type', 'sex_upon_outcome', 'location_lat', 'location_long',
             'age_upon_outcome_in_weeks', 'rescue_type'
         ]
-        
+
         records = [dict(zip(columns, row)) for row in result]
         return records
 
