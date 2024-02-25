@@ -3,7 +3,7 @@ services:
   name: tammyhartlinescapstone
   env: python
   buildCommand: pip install -r requirements.txt
-  startCommand: gunicorn -b 0.0.0.0:8050 app:app
+  startCommand: gunicorn wsgi:server
   repo: https://github.com/tjhartline/capstone
   branch: master
   runtime: python
