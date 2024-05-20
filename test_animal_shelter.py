@@ -1,5 +1,7 @@
 import unittest
 import sqlite3
+import os
+import pandas as pd
 from animal_shelter import AnimalShelter
 
 class TestAnimalShelter(unittest.TestCase):
