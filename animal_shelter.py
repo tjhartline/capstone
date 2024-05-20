@@ -7,32 +7,32 @@
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
 |                                            Changelog:                                                     |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start -- 01/2024 - TH                                                                               |
+|  ###  Start -- 05/2024 - TH                                                                               |
 |  [Altered the database from MongoDB to SQlite3 file storage database structure to be more efficient and   |
 |  less "overkill" given the program only handles a single .csv file for the dashboard application.]        |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start -- 02/2024 - TH                                                                               |
+|  ###  Start -- 05/2024 - TH                                                                               |
 |  [Updated each method to conform with SQlite3 syntax and structure and to optimize the queries.]          |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start -- 02/2024 - TH                                                                               |
+|  ###  Start -- 05/2024 - TH                                                                               |
 |  [Removed some of the non-working CRUD methods, after several failed attempts to get them to work         |
 |  using SQLite. Some that did not work were the update and delete methods. Intend to add them back once    |
 |  the development is further along.]                                                                       |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start --02/2024 - TH                                                                                |
+|  ###  Start -- 05/2024 - TH                                                                                |
 |  [Adding methods back in an attempt to complete the program with all of its original functionality        |
 |  and features, and the enhancements working correctly.]                                                   |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start --02/2024 - TH                                                                                |
+|  ###  Start -- 05/2024 - TH                                                                                |
 |  [Adding the unq_animal_types method to define a new column. Note, this was the issue in the app file     |
 |  causing it not to launch on the server when running the main app.py file.]                               |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start --02/2024 - TH                                                                                |
+|  ###  Start -- 05/2024 - TH                                                                                |
 |  [Finally removed unneeded methods and cleaned up code file to launch MVP.]                               |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
