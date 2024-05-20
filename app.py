@@ -155,13 +155,19 @@ def update_dashboard(*args):
         selected_animal_type = clicked_button_id.split('-')[1]
         filtered_df = df[df['animal_type'] == selected_animal_type]  # Filter by selected animal type
 
+    # Group by animal_type and outcome_type and count the occurrences
+    grouped_df = filtered_df.groupby(['animal_type', 'outcome_type']).size().reset_index(name='count')
+
     # Create a bubble chart
     fig = px.scatter(
-        filtered_df, 
-        x="animal_type", 
-        y="outcome_type", 
-        size_max=10,
-        color="animal_type")
+        grouped_df,
+        x="animal_type",
+        y="outcome_type",
+        size="count",
+        color="animal_type",
+        hover_data={'count': True},
+        labels={'count': 'Count'}
+    )
 
     # Convert DataFrame to dict for dash_table
     filtered_data = filtered_df.to_dict('records')
