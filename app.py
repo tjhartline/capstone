@@ -8,47 +8,47 @@
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
 |                                            Changelog:                                                     |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start -- 01/2024 - TH                                                                               |
+|  ###  Start -- 05/2024 - TH                                                                               |
 |  [Converted jupyter notebook file into a Python application file to more easily integrate as web          |
 |  application instead of hosting locally.]                                                                 |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start -- 02/2024 - TH                                                                               |
+|  ###  Start -- 05/2024 - TH                                                                               |
 |  [Updated language to call the new animal_shelter.py import, versus previous module.py.]                  |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start -- 02/2024 - TH                                                                               |
+|  ###  Start -- 05/2024 - TH                                                                               |
 |  [Corrected filters and continuously debugging to determine what is causing them to not function          |
 |  properly if they function at all.]                                                                       |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start --02/2024 - TH                                                                                |
+|  ###  Start --05/2024 - TH                                                                                |
 |  [Added enhancements as planned, but still running into buggy application issues.]                        |
 |  ### - End                                                                                                |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|  ###  Start --02/2024 - TH                                                                                |
+|  ###  Start --05/2024 - TH                                                                                |
 |  [Made final enhancements, debugged, tested and is now ready for MVP deployment.                          |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
 |                                            Notes:                                                         |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|   02/05/2024                                                                                              |
+|   05/17/2024                                                                                              |
 |   Notes for next assignments and TODOS: Figure out why the code is not launching the web application.     |
 |   Current Issues: The code is not launching the web application at all. Either it returns                 |
 |   Not found, or it returns a 504 error page. Cannot continue to test until I can get it to deploy.        |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|   02/07/2024                                                                                              |
+|   05/18/2024                                                                                              |
 |   Update: After several alterations, and updating the final call to the app.run_server method,            |
 |   the application is now launching.                                                                       |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|   02/11/2024                                                                                              |
+|   05/18/2024                                                                                              |
 |   Notes for next assignments and TODOS: Debugging and testing the application                             |
 |   Current Issues: Filters are not functioning properly. The data is not being filtered as expected.       |
 |   When clicking on any filter, or using the text filter, the data is not changed, or sorted.              |
 |   It also does not populate the graph with the correct data.                                              |
 |   Continue altering the code and testing to find the issue and continue adding enhancements.              |
 |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*|
-|   02/24/2024                                                                                              |
+|   05/19/2024                                                                                              |
 |   Notes on final adjustments to get to MVP.                                                               |
 |   The map functionality was never helpful, so I removed it altogether, as it only ever showed the         |
 |   location of the animal shelter, not the lat and long in the data table. I also removed the              |
