@@ -142,6 +142,11 @@ app.layout = html.Div([
     [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types],
     prevent_initial_call=True
 )
+@app.callback(
+    [Output('bubble-plot', 'figure'), Output('datatable-id', 'data'), Output('datatable-id', 'columns')],
+    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types],
+    prevent_initial_call=True
+)
 def update_dashboard(*args):
     btn_all_clicks, *btn_type_click = args
 
@@ -155,18 +160,15 @@ def update_dashboard(*args):
         selected_animal_type = clicked_button_id.split('-')[1]
         filtered_df = df[df['animal_type'] == selected_animal_type]  # Filter by selected animal type
 
-    # Group by animal_type and outcome_type and count the occurrences
-    grouped_df = filtered_df.groupby(['animal_type', 'outcome_type']).size().reset_index(name='count')
-
-    # Create a bubble chart
+    # Create a scatter plot
     fig = px.scatter(
-        grouped_df,
-        x="animal_type",
-        y="outcome_type",
-        size="count",
-        color="animal_type",
-        hover_data={'count': True},
-        labels={'count': 'Count'}
+        filtered_df,
+        x='age_upon_outcome_in_weeks',
+        y='outcome_type',
+        color='animal_type',
+        hover_data={'animal_type': True, 'age_upon_outcome_in_weeks': ':.2f', 'outcome_type': True},
+        labels={'age_upon_outcome_in_weeks': 'Age (in weeks)', 'outcome_type': 'Outcome Type', 'animal_type': 'Animal Type'},
+        title='Age vs. Outcome Type by Animal Type'
     )
 
     # Convert DataFrame to dict for dash_table
