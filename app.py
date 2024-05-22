@@ -142,11 +142,6 @@ app.layout = html.Div([
     [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types],
     prevent_initial_call=True
 )
-@app.callback(
-    [Output('bubble-plot', 'figure'), Output('datatable-id', 'data'), Output('datatable-id', 'columns')],
-    [Input('btn-all', 'n_clicks')] + [Input(f'btn-{animal_type}', 'n_clicks') for animal_type in unq_animal_types],
-    prevent_initial_call=True
-)
 def update_dashboard(*args):
     btn_all_clicks, *btn_type_click = args
 
