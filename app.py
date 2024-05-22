@@ -96,7 +96,8 @@ app.layout = html.Div([
         html.Div(id='header', className='col-6', style={'text-align': 'center'}),
         html.Div([
             html.Img(id='customer-logo', src='data:image/png;base64,{}'.format(encoded_image.decode()),
-                     alt='customer logo image'),
+                     alt='customer logo image', 
+                     style={'width': '30%', 'height': '30%'}),
         ], className='col-6', style={'display': 'flex', 'justify-content': 'center', 'align-items': 'center'}),
     ], className='row'),
 
