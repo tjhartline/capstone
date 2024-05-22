@@ -160,24 +160,21 @@ def update_dashboard(*args):
         selected_animal_type = clicked_button_id.split('-')[1]
         filtered_df = df[df['animal_type'] == selected_animal_type]  # Filter by selected animal type
 
-    # Create age bins
-    age_bins = [0, 8, 16, 52, 156, float('inf')]
-    age_labels = ['0-2 months', '2-4 months', '4-12 months', '1-3 years', '3+ years']
-    filtered_df['age_bin'] = pd.cut(filtered_df['age_upon_outcome_in_weeks'], bins=age_bins, labels=age_labels, right=False)
+    # Group by animal_type and outcome_type and count the occurrences
+    grouped_df = filtered_df.groupby(['animal_type', 'outcome_type']).size().reset_index(name='count')
 
-    # Group by animal_type, age_bin, and outcome_type and calculate the count
-    grouped_df = filtered_df.groupby(['animal_type', 'age_bin', 'outcome_type']).size().reset_index(name='count')
+    print("Grouped DataFrame:")
+    print(grouped_df)
 
-    # Create a stacked bar chart
-    fig = px.bar(
+    # Create a bubble chart
+    fig = px.scatter(
         grouped_df,
-        x='age_bin',
-        y='count',
-        color='outcome_type',
-        barmode='stack',
-        facet_col='animal_type',
-        labels={'age_bin': 'Age Bin', 'count': 'Count', 'outcome_type': 'Outcome Type', 'animal_type': 'Animal Type'},
-        title='Outcome Type Count by Age Bin and Animal Type'
+        x="animal_type",
+        y="outcome_type",
+        size="count",
+        color="animal_type",
+        hover_data={'count': True},
+        labels={'count': 'Count'}
     )
 
     # Convert DataFrame to dict for dash_table
