@@ -42,23 +42,18 @@ import sqlite3
 import pandas as pd
 import os
 
-# Create animal shelter class
 class AnimalShelter(object):
     def __init__(self, db_path=':memory:'):
         self.db_path = db_path
         self._create_table()
+        self._create_index()
 
-
-    # create table to store data using SQLite 
     def _create_table(self):
-        # if the database is in memory, there is no need to create a table
         if self.db_path == ':memory:':
             db_file = "animals.db"
-            # if the database file exists, there is no need to create a table
             if os.path.exists(db_file):
                 return
 
-        # checking if table exists and if not, create it with all the columns located in the csv file    
         query_str = '''
             CREATE TABLE IF NOT EXISTS animals (
                 animal_id INTEGER PRIMARY KEY,
@@ -78,33 +73,50 @@ class AnimalShelter(object):
                 age_upon_outcome_in_weeks REAL
             )
         '''
-        # connect to sqlite3, create table and read in the csv file
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(query_str)
             df = pd.read_csv("./aac_shelter_outcomes.csv")
             df.to_sql('animals', conn, if_exists='replace', index=False)
-                
 
-    # Create a read method for querying the database
+    def _create_index(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_animal_type ON animals (animal_type)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_outcome_type ON animals (outcome_type)')
+
     def read(self, query=None):
         query_str = 'SELECT * FROM animals'
         params = None
 
-        # if there is a query, add it to the query string
         if query is not None:
-            query_str += f" WHERE {query[0]}"
-            params = query[1]
+            # Input validation and sanitization
+            if not isinstance(query, tuple) or len(query) != 2:
+                raise ValueError("Invalid query format. Expected a tuple of length 2.")
+            
+            query_condition, query_params = query
+            if not isinstance(query_condition, str) or not query_condition.strip():
+                raise ValueError("Invalid query condition. Expected a non-empty string.")
+            
+            if not isinstance(query_params, tuple):
+                raise ValueError("Invalid query parameters. Expected a tuple.")
+            
+            # Sanitize the query condition to prevent SQL injection
+            query_condition = query_condition.replace(';', '').replace('--', '')
+            
+            query_str += f" WHERE {query_condition}"
+            params = query_params
 
-        # connect to sqlite3 and read in the query
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
 
-            # if there are parameters, use them in the query
-            if params is not None:
-                df = pd.read_sql_query(query_str, conn, params=params)
-
-            # if there are no parameters, just run the query
-            else:
-                df = pd.read_sql_query(query_str, conn)
-            return df
+                if params is not None:
+                    df = pd.read_sql_query(query_str, conn, params=params)
+                else:
+                    df = pd.read_sql_query(query_str, conn)
+                return df
+        except sqlite3.Error as e:
+            # Proper error handling
+            print(f"An error occurred while executing the query: {e}")
+            return None
